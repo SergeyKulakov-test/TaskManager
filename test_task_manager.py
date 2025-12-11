@@ -45,11 +45,10 @@ class TestTaskManager:
 
         # Проверяем, что первая задача удалена
         assert len(task_manager.tasks) == 1  # Осталась только 1 задача
-        assert 1 not in task_manager.tasks  # Первой задачи нет
-        assert 2 in task_manager.tasks  # Вторая задача осталась
+        assert "Первая задача" not in task_manager.tasks  # Первой задачи нет
 
-        # Проверяем, что вторая задача не изменилась
-        assert task_manager.tasks[2]["description"] == "Вторая задача"
+        # Проверяем, что вторая задача не изменилась и стала первой
+        assert task_manager.tasks[1]["description"] == "Вторая задача"
 
     def test_save_and_load_from_json(self):
         # Создаем временный файл для теста

@@ -29,6 +29,7 @@ class TaskManager:
                 task_text = self.tasks[index]["description"]
                 del self.tasks[index]
                 print(f"Задача #{index} '{task_text}' удалена.")
+                self.id_update_task()
             else:
                 print(f"Ошибка: Задача #{index} не найдена")
         except ValueError:
@@ -73,6 +74,22 @@ class TaskManager:
         for task_id, task_info in self.tasks.items():
             status = "Выполнено" if task_info["completed"] else "Не выполнено"
             print(f"{task_id}. [{status}] {task_info['description']}")
+
+    def id_update_task(self):
+        if not self.tasks:
+            self.next_id = 1
+            return
+        new_tasks = {}
+        new_id = 1
+        for task_new_id in self.tasks.values():
+            new_tasks[new_id] = task_new_id
+            new_id += 1
+
+        # Заменяем старые задачи новыми с обновленными ID
+        self.tasks = new_tasks
+
+        # Обновляем next_id
+        self.next_id = len(self.tasks) + 1
 
 
 def get_task_id_input(prompt):
