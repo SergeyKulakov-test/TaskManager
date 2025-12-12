@@ -16,14 +16,14 @@ class TestTaskManager:
         task_manager.add_task("Тестовая задача 2")
 
         # Проверяем, что задачи добавлены
-        assert len(task_manager.tasks) == 2
+        assert len(task_manager.tasks) == 2, "Задачи должны быть добавлены"
 
         # Проверяем, что задачи добавлены корректно
         assert task_manager.tasks[1]["description"] == "Тестовая задача 1", "Текст задачи 1 сохраняется не корректно"
         assert task_manager.tasks[2]["description"] == "Тестовая задача 2", "Текст задачи 2 сохраняется не корректно"
 
         # Проверяем, что при создании задачи она не выполнена
-        assert task_manager.tasks[1]["completed"] == False, "Задача должна создаваться как Невыполненая"
+        assert task_manager.tasks[1]["completed"] is False, "Задача должна создаваться как Невыполненая"
 
     def test_complete_task(self):
         # Создаем экземпляр TaskManager
@@ -36,7 +36,7 @@ class TestTaskManager:
         task_manager.complete_task(1)
 
         # Проверяем, что статус изменился на True
-        assert task_manager.tasks[1]["completed"] == True, "Статус должен быть - Выполнено"
+        assert task_manager.tasks[1]["completed"] is True, "Статус должен быть - Выполнено"
 
     def test_remove_task(self):
         # Создаем экземпляр TaskManager
@@ -51,6 +51,8 @@ class TestTaskManager:
 
         # Проверяем, что задача удалена
         assert len(task_manager.tasks) == 1, "Задача должна быть удалена"
+        # Проверяем, что удалена указанная задача
+        assert "Первая задача" not in task_manager.tasks, """\"Первая задача\" должна отсутствовать"""
 
     def test_save_and_load_from_json(self):
         # Создаем временный файл для теста
@@ -62,13 +64,13 @@ class TestTaskManager:
             base_name = os.path.splitext(temp_path)[0]
 
             # Создаем первый менеджер и добавляем задачи
-            task_manager1 = TaskManager()
-            task_manager1.add_task("Задача для сохранения")
-            task_manager1.add_task("Другая задача")
-            task_manager1.complete_task(1)  # Отмечаем первую как выполненную
+            task_manager_1 = TaskManager()
+            task_manager_1.add_task("Задача для сохранения")
+            task_manager_1.add_task("Другая задача")
+            task_manager_1.complete_task(1)  # Отмечаем первую как выполненную
 
             # Сохраняем задачи в JSON
-            task_manager1.save_to_json(base_name)
+            task_manager_1.save_to_json(base_name)
 
             # Проверяем, что файл создан
             json_file = base_name + '.json'
@@ -81,23 +83,23 @@ class TestTaskManager:
             # Проверяем корректность сохраненных данных
             assert len(saved_data) == 2, "Должно быть сохранено 2 задачи"
             assert saved_data["1"]["description"] == "Задача для сохранения"
-            assert saved_data["1"]["completed"] == True, "Первая задача должна быть выполнена"
+            assert saved_data["1"]["completed"] is True, "Первая задача должна быть выполнена"
             assert saved_data["2"]["description"] == "Другая задача"
-            assert saved_data["2"]["completed"] == False, "Вторая задача не должна быть выполнена"
+            assert saved_data["2"]["completed"] is False, "Вторая задача не должна быть выполнена"
 
             # Создаем новый менеджер и загружаем задачи
-            task_manager2 = TaskManager()
-            task_manager2.load_from_json(base_name)
+            task_manager_2 = TaskManager()
+            task_manager_2.load_from_json(base_name)
 
             # Проверяем, что задачи загружены корректно
-            assert len(task_manager2.tasks) == 2, "Должно быть загружено 2 задачи"
-            assert task_manager2.tasks[1]["description"] == "Задача для сохранения"
-            assert task_manager2.tasks[1]["completed"] == True, "Первая задача должна быть выполнена"
-            assert task_manager2.tasks[2]["description"] == "Другая задача"
-            assert task_manager2.tasks[2]["completed"] == False, "Вторая задача не должна быть выполнена"
+            assert len(task_manager_2.tasks) == len(task_manager_1.tasks), "Должно быть загружено 2 задачи"
+            assert task_manager_2.tasks[1]["description"] == task_manager_1.tasks[1]["description"], "Описание первой задачи, должно соответствовать сохраненному"
+            assert task_manager_2.tasks[1]["completed"] is task_manager_1.tasks[1]["completed"], "Первая задача должна быть выполнена"
+            assert task_manager_2.tasks[2]["description"] == task_manager_1.tasks[2]["description"], "Описание второй задачи, должно соответствовать сохраненному"
+            assert task_manager_2.tasks[2]["completed"] is task_manager_1.tasks[2]["completed"], "Вторая задача не должна быть выполнена"
 
             # Проверяем, что next_id установлен правильно
-            assert task_manager2.next_id == 3, "next_id должен быть равен 3 (следующий ID после 2)"
+            assert task_manager_2.next_id == 3, "next_id должен быть равен 3 (следующий ID после 2)"
 
         finally:
             # Удаляем временный файл после теста
