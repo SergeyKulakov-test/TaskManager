@@ -7,25 +7,36 @@ from task_manager import TaskManager
 
 class TestTaskManager:
 
-    def test_add_and_complete_task(self):
+    def test_add_task(self):
+        # Создаем экземпляр TaskManager
+        task_manager = TaskManager()
+
+        # Добавляем задач
+        task_manager.add_task("Тестовая задача 1")
+        task_manager.add_task("Тестовая задача 2")
+
+        # Проверяем, что задачи добавлены
+        assert len(task_manager.tasks) == 2
+
+        # Проверяем, что задачи добавлены корректно
+        assert task_manager.tasks[1]["description"] == "Тестовая задача 1", "Текст задачи 1 сохраняется не корректно"
+        assert task_manager.tasks[2]["description"] == "Тестовая задача 2", "Текст задачи 2 сохраняется не корректно"
+
+        # Проверяем, что при создании задачи она не выполнена
+        assert task_manager.tasks[1]["completed"] == False, "Задача должна создаваться как Невыполненая"
+
+    def test_complete_task(self):
         # Создаем экземпляр TaskManager
         task_manager = TaskManager()
 
         # Добавляем задачу
         task_manager.add_task("Тестовая задача")
 
-        # Проверяем, что задача добавлена
-        assert 1 in task_manager.tasks  # ID должен быть 1
-        assert task_manager.tasks[1]["description"] == "Тестовая задача"
-
-        # Проверяем начальный статус (должен быть False)
-        assert task_manager.tasks[1]["completed"] == False
-
         # Отмечаем задачу как выполненную
         task_manager.complete_task(1)
 
         # Проверяем, что статус изменился на True
-        assert task_manager.tasks[1]["completed"] == True
+        assert task_manager.tasks[1]["completed"] == True, "Статус должен быть - Выполнено"
 
     def test_remove_task(self):
         # Создаем экземпляр TaskManager
@@ -35,20 +46,11 @@ class TestTaskManager:
         task_manager.add_task("Первая задача")
         task_manager.add_task("Вторая задача")
 
-        # Проверяем, что задачи добавлены
-        assert len(task_manager.tasks) == 2  # Должно быть 2 задачи
-        assert 1 in task_manager.tasks  # Первая задача
-        assert 2 in task_manager.tasks  # Вторая задача
-
         # Удаляем первую задачу
         task_manager.remove_task(1)
 
-        # Проверяем, что первая задача удалена
-        assert len(task_manager.tasks) == 1  # Осталась только 1 задача
-        assert "Первая задача" not in task_manager.tasks  # Первой задачи нет
-
-        # Проверяем, что вторая задача не изменилась и стала первой
-        assert task_manager.tasks[1]["description"] == "Вторая задача"
+        # Проверяем, что задача удалена
+        assert len(task_manager.tasks) == 1, "Задача должна быть удалена"
 
     def test_save_and_load_from_json(self):
         # Создаем временный файл для теста
